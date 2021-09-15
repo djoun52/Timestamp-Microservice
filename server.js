@@ -30,21 +30,30 @@ app.get("/api", (req, res)=>{
 
 app.get("/api/:date?", (req, res)=> {
   let date_string = req.params.date
-  console.log(date_string)
   if (/\d{5,}/.test(date_string)) {
     let dateInt = parseInt(date_string);
-    res.json({ unix: dateInt.valueOf(), utc: new Date(dateInt).toUTCString() });
-  }else  {
+    res.json({ 
+      unix: dateInt.valueOf(),
+      utc: new Date(dateInt).toUTCString() 
+    });
+  }else if (/^\d{4,}/.test(date_string)) {
     let dateObject = new Date(date_string);
-
+      res.json({
+        unix : dateObject.valueOf() , 
+        utc : dateObject.toUTCString()   
+      });
+  }else{
+    let dateObject = new Date(date_string);
+    let dateNew = new Date(dateObject.valueOf() - (dateObject.getTimezoneOffset() * 60 * 1000));
     if (dateObject == 'Invalid Date'){
       res.json({ error : "Invalid Date" });
     }else{
-      console.log({date_origine:  date_string , unix : dateObject.valueOf() , utc : dateObject.toUTCString()})
-      res.json({unix : dateObject.valueOf() , utc : dateObject.toUTCString()});
+      res.json({
+        unix : dateNew.valueOf() , 
+        utc : dateNew.toUTCString()   
+      });
     }
   }
-
 })
 
 
